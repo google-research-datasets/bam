@@ -122,3 +122,7 @@ python tcav.py --model=obj
 ```
 
 to compute the TCAV scores of the default dog concept for the object model.
+
+## Disclaimer
+
+This is not an officially supported Google product.
