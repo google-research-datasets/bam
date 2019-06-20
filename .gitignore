@@ -1,0 +1,13 @@
+attr_reprod/**
+attr_scratch/**
+sal_scratch/**
+tcav_working_dir/**
+**/__pycache__/
+dist/**
+build/**
+*.egg-info/**
+data/**
+models/**
+*~
+\#*\#
+**/*.pyc
