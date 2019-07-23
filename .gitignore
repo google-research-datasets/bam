@@ -6,8 +6,8 @@ tcav_working_dir/**
 dist/**
 build/**
 *.egg-info/**
-data/**
 models/**
+data/**
 *~
 \#*\#
 **/*.pyc

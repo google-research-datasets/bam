@@ -22,7 +22,7 @@ with open(path.join(package_dir, 'README.md')) as f:
 
 setup(
     name='bim',
-    version='0.0',
+    version='0.4',
     description='Benchmark interpretability methods.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -38,4 +38,7 @@ setup(
         'Pillow>=6.0.0',
         'tcav>=0.2.1',
         'saliency>=0.0.2',
+        'Cython>=0.29.12',
+        'pycocotools>=2.0.0',
+        'scikit-learn>=0.20.3',
     ])
