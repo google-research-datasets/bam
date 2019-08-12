@@ -1,18 +1,15 @@
 # BIM - Benchmark Interpretability Method
 
 This repository contains dataset, models, and metrics for benchmarking
-interpretability methods (BIM) described in paper:
-
-*   Title: "BIM: Towards Quantitative Evaluation of Interpretability Methods
-    with Ground Truth"
-*   Authors: Sherry (Mengjiao) Yang, Been Kim
-
-Upon using this library, please cite:
+interpretability methods (BIM) described in paper [BIM: Towards Quantitative Evaluation of Interpretability Methods
+with Ground Truth](https://arxiv.org/abs/1907.09701). Upon using this library, please cite:
 
 ```
 @Article{BIM2019,
   title = {{BIM: Towards Quantitative Evaluation of Interpretability Methods with Ground Truth}},
   author = {Yang, Mengjiao and Kim, Been},
+  journal   = {CoRR},
+  volume    = {abs/1907.09701},
   year = {2019}
 }
 ```
