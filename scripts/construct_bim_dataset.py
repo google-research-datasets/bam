@@ -344,11 +344,11 @@ def save_tcav_images():
 
   tf.io.gfile.makedirs(os.path.join(tcav_data_dir, 'random_counter_part'))
   fnames = tf.io.gfile.listdir(
-      os.path.join(os.getcwd(), 'data', 'coco', 'images', 'val'))
+      os.path.join(os.getcwd(), 'data', 'scene_only', 'val'))
   fnames = [fnames[i] for i in random.sample(range(len(fnames)), 100)]
   for fname in fnames:
     tf.io.gfile.copy(
-        os.path.join(os.getcwd(), 'data', 'coco', 'images', 'val', fname),
+        os.path.join(os.getcwd(), 'data', 'scene_only', 'val', fname),
         os.path.join(tcav_data_dir, 'random_counter_part', fname))
 
   with open(
