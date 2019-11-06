@@ -47,7 +47,7 @@ METHOD_NAMES = [
 ]
 
 # Index into METHOD_NAMES for the desired method names. Ordered roughly
-# in the best to worst performance under the BIM metric.
+# in the best to worst performance under the BAM metric.
 METHOD_INDICES = [6, 0, 1, 4, 5, 10, 2, 8]
 
 # For MCS, IDR, and IIR, the configs correspond to the names of the model-data
@@ -60,10 +60,10 @@ METRIC_CONFIG = {
     'RMCS': ['scene', 'dog_bedroom']
 }
 
-# BIM models have 10 classes so there are 10 models for RMC testing.
+# BAM models have 10 classes so there are 10 models for RMC testing.
 NUM_RELATIVE_MODELS = 10
 
-# BIM's dataset for IIR contains 100 images so sample up to 100.
+# BAM's dataset for IIR contains 100 images so sample up to 100.
 MAX_SAMPLE_INDEX = 100
 
 # MCS and IDR are evaluated on 10000 images, IIR and RMCS are on 100.

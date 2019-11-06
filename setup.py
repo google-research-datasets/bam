@@ -21,12 +21,12 @@ with open(path.join(package_dir, 'README.md')) as f:
   long_description = f.read()
 
 setup(
-    name='bim',
-    version='0.4',
-    description='Benchmark interpretability methods.',
+    name='bam-intp',
+    version='0.1',
+    description='Benchmarking attribution methods.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/google-research-datasets/bim',
+    url='https://github.com/google-research-datasets/bam',
     author='Google Inc.',
     author_email='opensource@google.com',
     license='Apache 2.0',

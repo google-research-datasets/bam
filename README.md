@@ -1,12 +1,11 @@
-# BIM - Benchmark Interpretability Method
+# BAM - Benchmarking Attribution Methods
 
 This repository contains dataset, models, and metrics for benchmarking
-interpretability methods (BIM) described in paper [BIM: Towards Quantitative Evaluation of Interpretability Methods
-with Ground Truth](https://arxiv.org/abs/1907.09701). Upon using this library, please cite:
+attribution methods (BAM) described in paper [Benchmarking Attribution Methods with Relative Feature Importance](https://arxiv.org/abs/1907.09701). Upon using this library, please cite:
 
 ```
-@Article{BIM2019,
-  title = {{BIM: Towards Quantitative Evaluation of Interpretability Methods with Ground Truth}},
+@Article{BAM2019,
+  title = {{Benchmarking Attribution Methods with Relative Feature Importance}},
   author = {Yang, Mengjiao and Kim, Been},
   journal   = {CoRR},
   volume    = {abs/1907.09701},
@@ -17,20 +16,20 @@ with Ground Truth](https://arxiv.org/abs/1907.09701). Upon using this library, p
 ## Setup
 
 Run the following from the home directory of this repository to install python
-dependencies, download BIM models, download [MSCOCO](http://cocodataset.org) and
-[MiniPlaces](https://github.com/CSAILVision/miniplaces), and construct BIM
+dependencies, download BAM models, download [MSCOCO](http://cocodataset.org) and
+[MiniPlaces](https://github.com/CSAILVision/miniplaces), and construct BAM
 dataset.
 
 ```
-pip install bim
+pip install bam-intp
 source scripts/download_models.sh
 source scripts/download_datasets.sh
-python scripts/construct_bim_dataset.py
+python scripts/construct_bam_dataset.py
 ```
 
 ## Dataset
 
-<img src="https://raw.githubusercontent.com/google-research-datasets/bim/master/figures/dataset_demo.png" width="800">
+<img src="https://raw.githubusercontent.com/google-research-datasets/bam/master/figures/dataset_demo.png" width="800">
 
 Images in `data/obj` and `data/scene` are the same but have object and scene
 labels respectively, as shown in the figure above. `val_loc.txt` records the
@@ -58,7 +57,7 @@ objects. All models are in TensorFlow's
 
 ## Metrics
 
-BIM metrics compare how interpretability methods perform across models (model
+BAM metrics compare how interpretability methods perform across models (model
 contrast), across inputs to the same model (input dependence), and across
 functionally equivalent inputs (input independence).
 
@@ -68,7 +67,7 @@ Given images that contain both objects and scenes, model contrast measures the
 difference in attributions between the model trained on object labels and the
 model trained on scene labels.
 
-<img src="https://raw.githubusercontent.com/google-research-datasets/bim/master/figures/mc_demo.png" width="800">
+<img src="https://raw.githubusercontent.com/google-research-datasets/bam/master/figures/mc_demo.png" width="800">
 
 ### Input dependence rate
 
@@ -76,7 +75,7 @@ Given a model trained on scene labels, input dependence measures the percentage
 of inputs where the addition of objects results in the region being attributed
 as less important.
 
-<img src="https://raw.githubusercontent.com/google-research-datasets/bim/master/figures/id_demo.png" width="800">
+<img src="https://raw.githubusercontent.com/google-research-datasets/bam/master/figures/id_demo.png" width="800">
 
 ### Input independence rate
 
@@ -84,7 +83,7 @@ Given a model trained on scene-only images, input independence measures the
 percentage of inputs where a functionally insignificant patch (e.g., a dog) does
 not affect explanations significantly.
 
-<img src="https://raw.githubusercontent.com/google-research-datasets/bim/master/figures/ii_demo.png" width="800">
+<img src="https://raw.githubusercontent.com/google-research-datasets/bam/master/figures/ii_demo.png" width="800">
 
 ## Evaluate saliency methods
 
@@ -92,7 +91,7 @@ To compute model contrast score (MCS) over randomly selected 10 images, you can
 run
 
 ```
-python bim/metrics.py --metrics=MCS --num_imgs=10
+python bam/metrics.py --metrics=MCS --num_imgs=10
 ```
 
 To compute input dependence rate (IDR), change `--metrics` to `IDR`. To compute
@@ -106,7 +105,7 @@ python scripts/construct_delta_patch.py
 and then evaluate IIR by running
 
 ```
-python bim/metrics.py --metrics=IIR --num_imgs=10
+python bam/metrics.py --metrics=IIR --num_imgs=10
 ```
 
 ## Evaluate TCAV
@@ -117,7 +116,7 @@ object concept for the object model and the scene model. Run the following to
 compute the TCAV scores of the dog concept for the object model.
 
 ```
-python bim/run_tcav.py --model=obj
+python bam/run_tcav.py --model=obj
 ```
 
 ## Disclaimer
