@@ -66,25 +66,31 @@ NUM_RELATIVE_MODELS = 10
 # BIM's dataset for IIR contains 100 images so sample up to 100.
 MAX_SAMPLE_INDEX = 100
 
-# BIM's obj and scene datasets contain 10000 test images each.
-NUM_REPROD_IMAGES = 10000
+# MCS and IDR are evaluated on 10000 images, IIR and RMCS are on 100.
+NUM_TOTAL_IMAGES = {
+    'MCS': 10000,
+    'IDR': 10000,
+    'IIR': 100,
+    'RMCS': 100,
+}
+
 BASE_DIR = os.getcwd()
 
 
-def get_global_indices():
+def get_global_indices(metric):
   """When computing from scratch, generate random global image indices from a fixed seed.
 
   When reproducing results given attributions, enumerate all indices of
-  NUM_REPROD_IMAGES.
+  NUM_TOTAL_IMAGES['metric'].
   """
 
   if not FLAGS.scratch:
-    return range(NUM_REPROD_IMAGES)
+    return range(NUM_TOTAL_IMAGES[metric])
   random.seed(FLAGS.seed)
-  return sorted(random.sample(range(MAX_SAMPLE_INDEX), FLAGS.num_imgs))
+  return sorted(random.sample(range(NUM_TOTAL_IMAGES[metric]), FLAGS.num_imgs))
 
 
-def corr_indices(model, data):
+def corr_indices(model, data, metric):
   """Given the name of a model and a set of data, return the indices of the images that are correctly classified by the model."""
 
   label_fpath = os.path.join(BASE_DIR, 'data', data, 'val.txt')
@@ -97,7 +103,7 @@ def corr_indices(model, data):
   attr_indices = range(len(preds))
   if FLAGS.scratch:
     attr_indices = range(FLAGS.num_imgs)
-  global_indices = get_global_indices()
+  global_indices = get_global_indices(metric)
   corr = [i for i in attr_indices if preds[i] == labels[global_indices[i]]]
   return corr
 
@@ -137,7 +143,7 @@ def load_pos_neg_attr(model_pos, data_pos, model_neg, data_neg):
   return attr_pos, attr_neg
 
 
-def MCS(model_pos, data_pos, model_neg, data_neg):
+def MCS(model_pos, data_pos, model_neg, data_neg, relative=False):
   """Compute the model contrast score defined as the average attribution
 
   difference between model_pos-data_pos and model_neg-data_neg.
@@ -149,10 +155,11 @@ def MCS(model_pos, data_pos, model_neg, data_neg):
       data_neg: the data name for which objects have negative attributions.
   """
 
+  metric = 'RMCS' if relative else 'MCS'
   attr_pos, attr_neg = load_pos_neg_attr(model_pos, data_pos, model_neg,
                                          data_neg)
-  corr_pos = corr_indices(model_pos, data_pos)
-  corr_neg = corr_indices(model_neg, data_neg)
+  corr_pos = corr_indices(model_pos, data_pos, metric)
+  corr_neg = corr_indices(model_neg, data_neg, metric)
   corr = [i for i in corr_pos if i in corr_neg]
   for j in METHOD_INDICES:
     print(','.join(
@@ -170,8 +177,8 @@ def IDR(model, data_pos, data_neg):
   """
 
   attr_pos, attr_neg = load_pos_neg_attr(model, data_pos, model, data_neg)
-  corr_pos = corr_indices(model, data_pos)
-  corr_neg = corr_indices(model, data_neg)
+  corr_pos = corr_indices(model, data_pos, 'IDR')
+  corr_neg = corr_indices(model, data_neg, 'IDR')
   corr = [i for i in corr_pos if i in corr_neg]
   for j in METHOD_INDICES:
     count = sum(d > 0 for d in (attr_pos - attr_neg)[corr, j])
@@ -189,8 +196,8 @@ def IIR(model, data, data_patch, threashold=0.1):
   """
 
   attr, attr_patch = load_pos_neg_attr(model, data, model, data_patch)
-  corr = corr_indices(model, data)
-  corr_patch = corr_indices(model, data_patch)
+  corr = corr_indices(model, data, 'IIR')
+  corr_patch = corr_indices(model, data_patch, 'IIR')
   corr = [i for i in corr if i in corr_patch]
   for j in METHOD_INDICES:
     diff = abs(attr[corr, j] - attr_patch[corr, j])
@@ -199,9 +206,10 @@ def IIR(model, data, data_patch, threashold=0.1):
 
 
 def main(argv):
-  global_indices = get_global_indices()
   for metric in FLAGS.metrics:
     print('Results for {}:'.format(metric))
+
+    global_indices = get_global_indices(metric)
     if metric == 'RMCS':
       model_prefix, data = METRIC_CONFIG[metric]
       if FLAGS.scratch:
@@ -212,7 +220,7 @@ def main(argv):
         print('MCS between', model_prefix + str(i), 'and',
               model_prefix + str(NUM_RELATIVE_MODELS))
         MCS(model_prefix + str(i), data,
-            model_prefix + str(NUM_RELATIVE_MODELS), data)
+            model_prefix + str(NUM_RELATIVE_MODELS), data, relative=True)
     else:
       model1, data1, model2, data2 = METRIC_CONFIG[metric]
       if FLAGS.scratch:

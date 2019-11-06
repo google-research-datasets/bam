@@ -115,10 +115,10 @@ def compute_and_save_attr(model, data, indices, num_threads):
       vg_mask = vg.GetMask(img, feed_dict={neuron_selector: pred})
       # *s is SmoothGrad
       vgs_mask = vg.GetSmoothedMask(
-          img, feed_dict={neuron_selector: pred}, num_threads=50)
+          img, feed_dict={neuron_selector: pred})
       gb_mask = gb.GetMask(img, feed_dict={neuron_selector: pred})
       gbs_mask = gb.GetSmoothedMask(
-          img, feed_dict={neuron_selector: pred}, num_threads=50)
+          img, feed_dict={neuron_selector: pred})
       baseline = np.zeros(img.shape) - np.expand_dims(
           np.expand_dims(_CHANNEL_MEANS, 0), 0)
       ig_mask = ig.GetMask(
@@ -126,11 +126,10 @@ def compute_and_save_attr(model, data, indices, num_threads):
       igs_mask = ig.GetSmoothedMask(
           img,
           feed_dict={neuron_selector: pred},
-          x_baseline=baseline,
-          num_threads=50)
+          x_baseline=baseline)
       gc_mask = gc.GetMask(img, feed_dict={neuron_selector: pred})
       gcs_mask = gc.GetSmoothedMask(
-          img, feed_dict={neuron_selector: pred}, num_threads=50)
+          img, feed_dict={neuron_selector: pred})
       # gbgc is guided GradCam
       gbgc_mask = gb_mask * gc_mask
       gbgcs_mask = gbs_mask * gcs_mask
@@ -176,34 +175,36 @@ def compute_and_save_attr(model, data, indices, num_threads):
       RESNET_SHAPE[1])
   mask_fpath = os.path.join(base_dir, 'data', data, 'val_mask')
 
-  # Original implementation of getting object masks
-  # obj_masks = [
-  #     np.load(tf.gfile.GFile(mask_fpath, 'rb'), allow_pickle=True)[i]
-  #     for i in indices
-  # ]
-
-  # New implementation for getting object masks for N images
-  obj_dict = {'backpack': 0,
-              'bird': 1,
-              'dog': 2,
-              'elephant': 3,
-              'kite': 4,
-              'pizza': 5,
-              'stop_sign': 6,
-              'toilet': 7,
-              'truck': 8,
-              'zebra': 9,
-              }
+  if data in ['obj', 'scene', 'scene_only']:
+    # MCS and IDR are evaluated on 10000 images and masks are 10x100.
+    # Find the right mask.
+    obj_dict = {'backpack': 0,
+                'bird': 1,
+                'dog': 2,
+                'elephant': 3,
+                'kite': 4,
+                'pizza': 5,
+                'stop_sign': 6,
+                'toilet': 7,
+                'truck': 8,
+                'zebra': 9,
+    }
     
-  # Loading val_mask from the data directory
-  masks_mat = np.load(tf.gfile.GFile(mask_fpath, 'rb'), allow_pickle=True)
-  # Getting obj indices
-  obj_inds = [obj_dict[i.split('.')[0].split('-')[0]] for i in img_names]
-  # getting indices for a particular object class
-  temp_inds = [int(i.split('.')[0][-2:]) for i in img_names]
+    # Loading val_mask from the data directory
+    masks_mat = np.load(tf.gfile.GFile(mask_fpath, 'rb'), allow_pickle=True)
+    # Getting obj indices
+    obj_inds = [obj_dict[i.split('.')[0].split('-')[0]] for i in img_names]
+    # getting indices for a particular object class
+    temp_inds = [int(i.split('.')[0][-2:]) for i in img_names]
 
-  obj_masks = [masks_mat[obj_inds[i]*100 + temp_inds[i]]
-               for i, _ in enumerate(img_names)]
+    obj_masks = [masks_mat[obj_inds[i]*100 + temp_inds[i]]
+                 for i, _ in enumerate(img_names)]
+
+  else:
+    obj_masks = [
+      np.load(tf.gfile.GFile(mask_fpath, 'rb'), allow_pickle=True)[i]
+      for i in indices
+    ]
 
   attrs = []
   for i in range(len(indices)):
