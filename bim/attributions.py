@@ -175,10 +175,36 @@ def compute_and_save_attr(model, data, indices, num_threads):
       len(indices), int(maps_2d.shape[0] // len(indices)), RESNET_SHAPE[0],
       RESNET_SHAPE[1])
   mask_fpath = os.path.join(base_dir, 'data', data, 'val_mask')
-  obj_masks = [
-      np.load(tf.gfile.GFile(mask_fpath, 'rb'), allow_pickle=True)[i]
-      for i in indices
-  ]
+
+  # Original implementation of getting object masks
+  # obj_masks = [
+  #     np.load(tf.gfile.GFile(mask_fpath, 'rb'), allow_pickle=True)[i]
+  #     for i in indices
+  # ]
+
+  # New implementation for getting object masks for N images
+  obj_dict = {'backpack': 0,
+              'bird': 1,
+              'dog': 2,
+              'elephant': 3,
+              'kite': 4,
+              'pizza': 5,
+              'stop_sign': 6,
+              'toilet': 7,
+              'truck': 8,
+              'zebra': 9,
+              }
+    
+  # Loading val_mask from the data directory
+  masks_mat = np.load(tf.gfile.GFile(mask_fpath, 'rb'), allow_pickle=True)
+  # Getting obj indices
+  obj_inds = [obj_dict[i.split('.')[0].split('-')[0]] for i in img_names]
+  # getting indices for a particular object class
+  temp_inds = [int(i.split('.')[0][-2:]) for i in img_names]
+
+  obj_masks = [masks_mat[obj_inds[i]*100 + temp_inds[i]]
+               for i, _ in enumerate(img_names)]
+
   attrs = []
   for i in range(len(indices)):
     attr = single_attr(maps_2d[i], locs[i], obj_masks[i])
